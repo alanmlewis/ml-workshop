@@ -1,11 +1,11 @@
 Introduction
 ============
 
-This workshop provides a simple introduction to machine-learned potentials and tensorial property prediction. In both cases, kernel-based Gaussian process regression is used to perform the machine learning, but the majority of the principles introduced can be straightforwardly translated to neural network based models. It was originally written for the 2024 Spring School of the SFB 986. For introductory background to the software packages used here, please read `A. P. Bartok and G. Csanyi, International Journal of Quantum Chemistry 115, 1051 (2015)`_ for gap_fit and `A. Grisafi, D. M. Wilkins, G. Csanyi, and M. Ceriotti, Physical Review Letters 120, 36002 (2018)`_ for TENSOAP.
+This workshop provides a simple introduction to machine-learned potentials and tensorial property prediction. In both cases, kernel-based Gaussian process regression is used to perform the machine learning, but the majority of the principles introduced can be straightforwardly translated to neural network based models. It was originally written for the 2024 Spring School of the SFB 986. For background reading about the software packages used here, please refer to `A. P. Bartok and G. Csanyi, International Journal of Quantum Chemistry 115, 1051 (2015)`_ for gap_fit and `A. Grisafi, D. M. Wilkins, G. Csanyi, and M. Ceriotti, Physical Review Letters 120, 36002 (2018)`_ for TENSOAP.
 
 This workshop has been tested on Ubuntu and Windows machines, but not iOS. I believe it should run smoothly on iOS, but if you encounter any problems please report an issue through GitHub or e-mail me directly at alan.m.lewis@york.ac.uk. 
 
-**Windows users** will need to install `Windows Subsystem for Linux`_ by running :code: `wsl --install` prior to any further steps, and use the WSL terminal to complete the steps shown below. You will also need to install git, using :code: `sudo apt-get install git`.
+**Windows users** will need to install `Windows Subsystem for Linux`_ by running ``wsl --install`` prior to any further steps, and use the WSL terminal to complete the steps shown below. You will also need to install git, using ``sudo apt-get install git``.
 
 .. _A. P. Bartok and G. Csanyi, International Journal of Quantum Chemistry 115, 1051 (2015): https://onlinelibrary.wiley.com/doi/10.1002/qua.24927
 .. _A. Grisafi, D. M. Wilkins, G. Csanyi, and M. Ceriotti, Physical Review Letters 120, 36002 (2018): https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.120.036002
@@ -22,7 +22,7 @@ To begin, clone this repository by running
 
  ``git clone https://github.com/alanmlewis/ml-workshop``
 
-This will create a new folder called `ml-workshop`; change directory into that folder using `cd ml-workshop`. Everything else we do in the workshop will take place in this folder or a subfolder.
+This will create a new folder called ``ml-workshop``; change directory into that folder using ``cd ml-workshop``. Everything else we do in the workshop will take place in this folder or a subfolder.
 
 Creating a Python environment
 -----------------------------
@@ -31,10 +31,13 @@ You may want to create a python environment specifically for this workshop. To d
 
  ``python -m venv ./venv``
 
-This will create a folder called venv where we will install all of the python packages needed to run the workshop. You should activate this by running:
+This will create a folder called venv where we will install all of the python packages needed to run the workshop. You should activate this environment by running:
 
  ``source venv/bin/activate``
 
+You should also set the number of parallel threads to use, probably to 4:
+ ``export OMP_NUM_THREADS=4``
+..
 or on Windows
 
  ``. venv/Scripts/activate/``
@@ -50,7 +53,7 @@ This should install gap_fit and all of its dependencies. To test this has instal
 
  ``gap_fit config_file=gap_config.cfg``
 
-This program should take around 1 minute to complete, during which time you should see a lot of text produced, with the words 'Bye Bye' displayed near the end of this text. 
+This program should take a few seconds to complete, during which time you should see a lot of text produced, with the words 'Bye Bye' displayed near the end of this text. 
 
 Installing TENSOAP
 ------------------
@@ -71,11 +74,11 @@ to complete the installation. Finally, to get simple access to the programs cont
 
  ``source TENSOAP/env.sh``
 
-To test the installation of TENSOAP, change directory into :code: `polarizabilities`, and run the following command:
+To test the installation of TENSOAP, change directory into ``polarizabilities``, and run the following command:
 
  ``sagpr_get_PS -f ../gap_input_50.xyz -lm 0 -p -nc 200 -o PS0``
 
-This should take a few seconds, and produce four files: `PS0.npy`, `PS0_Amat.npy`, `PS0_fps.npy`, and `PS0_natoms.npy`.
+This should take a few seconds, and produce four files: ``PS0.npy``, ``PS0_Amat.npy``, ``PS0_fps.npy``, and ``PS0_natoms.npy``.
 
 
 Workshop Instructions
