@@ -14,7 +14,7 @@ This workshop has been tested on Ubuntu and Windows machines, but not iOS. I bel
 Windows Users
 =============
 
-Like many specialised software packages, the tools we will use for the workshop are not available on Windows. Therefore, users who use have three options:
+Like many specialised software packages, the tools we will use for the workshop are not available on Windows. Therefore, users who use Windows have three options:
 
 #. The first and best option is to log into a UNIX machine you have access to through your institution and complete the preparation steps listed below.
 
