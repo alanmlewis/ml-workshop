@@ -16,11 +16,14 @@ Windows Users
 
 Like many specialised software packages, the tools we will use for the workshop are not available on Windows. Therefore, users who use have three options:
 
-# The first and best option is to log into a UNIX machine you have access to through your institution and complete the preparation steps listed below.
+#. The first and best option is to log into a UNIX machine you have access to through your institution and complete the preparation steps listed below.
 
-# Alternatively I can provide USB Sticks from which a simple installation of Ubuntu can be booted, with all of the necessary installations already complete.
+#. Alternatively I will provide USB sticks from which a simple installation of Ubuntu can be booted, with all of the necessary installations already complete.
 
-# Finally, you can complete the workshop on your local Windows machine by installing `Windows Subsystem for Linux`_. However, this may be complex to set up, and requiresapproximately 10GB hard disk space. This can be achieved by running ``wsl --install`` from a Powershell window opened as an administrator. You may need to enable Virtual Machine Platform within Windows, and change your BIOS settings to enable virtual environments; this will depend on your hardware. You will also need to install various software packages, using ``sudo apt-get install git``.
+#. Finally, you can complete the workshop on your local Windows machine by installing `Windows Subsystem for Linux`_. However, this may be complex to set up, and requires approximately 10GB hard disk space. This can be achieved by running ``wsl --install`` from a Powershell window opened as an administrator and following the instructions. You may need to enable Virtual Machine Platform within Windows (this can be done by opening "Turn Windows features on or off" from the start menu and checking the corresponding box), and changing your BIOS settings to enable virtual environments (how this is done will depend on your hardware). You may need to run ``wsl --install`` multiple times before installation is complete. Once you have installed WSL and have opened a Linux terminal, you will also need to install various software packages, using the following commands:
+   ``sudo add-apt-repository universe
+   sudo apt-get install git python3-pip
+   export PATH=$PATH:/home/your_user_name/.local/bin``
 
 Preparing for the Workshop
 ==========================
@@ -36,6 +39,8 @@ This will create a new folder called ``ml-workshop``; change directory into that
 
 Creating a Python environment
 -----------------------------
+
+This section is optional, and should definitely be skipped if you are using Windows Subsystem for Linux.
 
 You may want to create a python environment specifically for this workshop. To do this, run
 
