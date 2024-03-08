@@ -1,0 +1,54 @@
+
+\documentclass{article}
+
+\begin{document}
+
+\section{Getting Started}
+
+This workshop is designed to be completed in groups of 2-4. Try to ensure your group has a mix of people with and without experience in coding, so you can help each other. If someone in the group is unable to run one or both machine learning packages, they are responsible for plotting graphs of the data produced by the other team members. Each section has subsections which should be completed by everybody, and subsections which can be divided amongst the group. These should be clearly indicated.
+
+\subsection{Bash}
+Note: If you have used the bash command line interface before, you can probably skip this section.
+
+We will run the machine learning codes from the command line. If you've not used the command line before, it is simply an alternative way to navigate your computer and run commands. You shouldn't need many commands for the workshop, and all of the commands related to the machine learning programs are explained at the relevant point of this Workshop Guide. Additional commands you might find useful are:
+
+\begin{itemize}
+
+\item \verb|cd folder_name| - Change directory into \verb|folder_name|.
+\item \verb|cd ..| - Go "up" one directory.
+\item \verb|cd -| - Go back to the previous directory you were in.
+\item \verb|ls| - List all files and subdirectories in this directory.
+
+\end{itemize}
+
+\subsection{vi}
+
+If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubuntu), you will be able to use those tools to view and modify text files. If you are restricted to just using the command line, you will need to use a command line text editor called vi to view and modify text files. A cheat sheet covering simple commands is provided below to help you with this if you need it.
+
+\section{Learning Energies and Forces}
+
+The program \verb|gap_fit| takes some input data stored in an xyz file, and trains a potential which can be used to calculate the energy and forces of a similar target system, given only the atomic positions of that target system. That potential is stored in a single file, called gap.xml. It is very straightforward to run from the command line:
+
+\verb| gap_fit config_file=gap_config.cfg |
+
+This reads a configuration file, here called \verb|gap_config.cfg| but which could in principle be called anything, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. We have covered most of these parameters in principle in the lecture part of this workshop, and will now look at the effect of how varying some of these parameters affects our ML performance.
+
+\subsection{How accurate is my model?}
+
+In order to see if our machine learning model is accurate, we need some way to test its predictions. We do this by pre-calculating the energies and forces for some molecular snapshots, then calculating the energies and forces of the snapshots using our ML potential and calculating the error relative to our precomputed values. This is called validation. 
+
+In the \verb|ml-workshop| folder, you will see two python scripts,
+
+\subsection{Creating a Learning Curve}
+
+The most important way to test
+
+\subsection{Overfitting}
+
+\subsection{Energy vs Forces}
+
+\subsection{Running Dynamics}
+
+\section{Learning Polarizabilities}
+
+\end{document}

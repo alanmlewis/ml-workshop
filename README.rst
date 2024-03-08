@@ -22,7 +22,7 @@ Like many specialised software packages, the tools we will use for the workshop 
 #. It is possible to complete the workshop on your local Windows machine by installing `Windows Subsystem for Linux`_. However, this may be complex to set up, and requires approximately 10GB hard disk space. This can be achieved by running ``wsl --install`` from a Powershell window opened as an administrator and following the instructions shown on the terminal. You may need to enable Virtual Machine Platform within Windows (this can be done by opening "Turn Windows features on or off" from the start menu and checking the corresponding box), and changing your BIOS settings to enable virtual environments (how this is done will depend on your hardware; check `here`_ for the hotkey to enter the BIOS when you switch your computer on). You may need to run ``wsl --install`` multiple times before installation is complete. Once you have installed WSL and have a WSL terminal open, you will also need to install various software packages, using the following commands:
 
    ``sudo add-apt-repository universe
-   sudo apt-get install git python3-pip
+   sudo apt-get install git python3-pip vim
    export PATH=$PATH:/home/your_user_name/.local/bin``
 
    Once this is complete, continue to the preparation steps below.
