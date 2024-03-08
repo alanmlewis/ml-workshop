@@ -20,17 +20,21 @@ Like many specialised software packages, the tools we will use for the workshop 
 #. The first and best option is to log into a UNIX machine you have access to through your institution and complete the preparation steps listed below on that computer. Your institution probably has a guide as to how to do this using ``ssh`` in PowerShell; note that you will probably need to log in to your institution VPN to access the machine from off-campus, so please make sure that has been set up correctly.
 
 #. It is possible to complete the workshop on your local Windows machine by installing `Windows Subsystem for Linux`_. However, this may be complex to set up, and requires approximately 10GB hard disk space. This can be achieved by running ``wsl --install`` from a Powershell window opened as an administrator and following the instructions shown on the terminal. You may need to enable Virtual Machine Platform within Windows (this can be done by opening "Turn Windows features on or off" from the start menu and checking the corresponding box), and changing your BIOS settings to enable virtual environments (how this is done will depend on your hardware; check `here`_ for the hotkey to enter the BIOS when you switch your computer on). You may need to run ``wsl --install`` multiple times before installation is complete. Once you have installed WSL and have a WSL terminal open, you will also need to install various software packages, using the following commands:
+
    ``sudo add-apt-repository universe
    sudo apt-get install git python3-pip
    export PATH=$PATH:/home/your_user_name/.local/bin``
-Once this is complete, continue to the preparation steps below.
+
+   Once this is complete, continue to the preparation steps below.
 
 #. Alternatively, I will provide USB sticks from which a simple installation of Ubuntu can be booted, with all of the necessary installations already complete. Try to find out how to enter the boot menu when you start your computer. This is usually done by tapping a hotkey repeatedly immediately after turn on your laptop. The specific hotkey depends on the manufacturer, but the hotkeys for a number of brands can be found on `here`_ (note that you want the Boot Menu hotkey, not the BIOS key).
 
 Mac Users
 =========
 
-The software we will use can run on Macs, but if you've not done much coding before you will likely need to install some features before you can begin. The first is pip, which can be installed by running
+The software we will use can run on Macs, but if you've not done much coding before you will likely need to install some features before you can begin. Alternatively, you can run the workshop on a UNIX machine you have access to through your institution; in this case see option 1 for Windows users above.
+
+The first tool is pip, which can be installed by running
 
  ``curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py``
 
