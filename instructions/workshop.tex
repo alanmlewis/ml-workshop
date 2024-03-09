@@ -1,4 +1,3 @@
-
 \documentclass{article}
 
 \begin{document}
@@ -23,7 +22,7 @@ We will run the machine learning codes from the command line. If you've not used
 
 \subsection{vi}
 
-If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubuntu), you will be able to use those tools to view and modify text files. If you are restricted to just using the command line, you will need to use a command line text editor called vi to view and modify text files. A cheat sheet covering simple commands is provided below to help you with this if you need it.
+If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubuntu), you will be able to use those tools to view and modify text files. If you are restricted to just using the command line, you will need to use a command line text editor called vi to view and modify text files. A cheat sheet covering simple commands is provided here to help you with this if you need it.
 
 \section{Learning Energies and Forces}
 
@@ -35,19 +34,82 @@ This reads a configuration file, here called \verb|gap_config.cfg| but which cou
 
 \subsection{How accurate is my model?}
 
-In order to see if our machine learning model is accurate, we need some way to test its predictions. We do this by pre-calculating the energies and forces for some molecular snapshots, then calculating the energies and forces of the snapshots using our ML potential and calculating the error relative to our precomputed values. This is called validation. 
+In order to see if our machine learning model is accurate, we need some way to test its predictions. We do this by pre-calculating the energies and forces for some molecular snapshots, then calculating the energies and forces of the snapshots using our ML potential and calculating the error relative to our precomputed values. This is called validation.
 
-In the \verb|ml-workshop| folder, you will see two python scripts,
+In the \verb|ml-workshop| folder, you will see two python scripts, called \verb|gap_error_validate.py| and \verb|gap_error_train.py|. These perform this validation process on two different sets of snapshots - a validation set contained in \verb|gap_validate.xyz|, which we will never use to train an ML model, and the set of snapshots we used to train the model, which is given in the config file, respectively. These will return as the last line of the output the root mean square error in the energy across the set of the snapshots. They also produce two files called \verb|validation_errors.csv| and \verb|train_errors.csv|, which contain the true values of the energy for each snapshot in the first column and the corresponding predicted energy in the second column.
+
+\subsubsection*{Questions}
+
+\begin{enumerate}
+ 
+\item What is the RMSE in the energy when you use a ML model trained using the default parameters to predict the energies of the validation set?
+\item What is the RMSE in the energy when you use a ML model trained using the default parameters to predict the energies of the training set?
+\item Why are these values different?
+\item What do you think will happen to each error when we train the model using more snapshots?
+\item (Optional) Plot \verb|validation_errors.csv| and \verb|train_errors.csv| as a scatter plot. What would these plots look like if the prediction was perfect? Can you tell by eye for which set of snapshots the error is more accurately predicted.
+
+\end{enumerate}
 
 \subsection{Creating a Learning Curve}
 
-The most important way to test
+The most important way to test whether our machine learning method is working as we expect is to plot a learning curve - that is, a plot of the RMSE in the predictions of the model against the number of snapshots used to train the model. We expect to see the error decrease as the number of training snapshots is increased, up to some limit, when the error stops improving.
+
+To help you plot a learning curve using \verb|gap_fit|, I have provided a number of input files labelled \verb|gap_input_N.xyz|, where \verb|N| is the number of snapshots in the training set. Each set includes all of the snapshots in the previous set, plus some new snapshots. You can select your trainig set by modifying \verb|gap_config.cfg|.
+
+\subsubsection*{Questions}
+
+\begin{enumerate}
+
+\item Train a model using 50, 100, 200 and 400 snapshots. Calculate the accuracy of each model on both the validation set and the corresponding training set, making a note of each error as you go.
+\item Plot the learning curves for both the RMSE over the training set and validation set on a single graph. Does what you see match your prediction from the previous section?
+\item Based on this plot, do you think training the model again using more training structures would further reduce the error?
+\item (Optional) Train a model using 800 snapshots. This will take a significant amount of time, so it is probably best to set this calculation up to run during the break! Only attempt this if your computer has at least 8 GB RAM.
 
 \subsection{Overfitting}
 
+This section could be completed by just one or two members of your group.
+
+Overfitting is a common problem when performing machine learning. It describes a situation where your model can extremely accurately reproduce the data in your training set, but in doing so is extremely unpredictable and inaccurate "between" the training points. This is illustrated for a simple example in Figure 1.
+
+\begin{figure}
+
+\includegraphics{Overfitted Data.png}
+
+\end{figure}
+
+Overfitting can be caused by a poor choice of a number of parameters. Some of these are directly connected to the idea of overfitting. For example, in \verb|gap_config.cfg|, the first value in the variable \verb|default_sigma| is an estimate of the standard deviation in the energy calculations. This effectively tells the model how closely it should try to fit to the training data. A small value here will almost always lead to overfitting. However, sometimes other parameters can lead to fitting in less obvious ways. For example, having extremely accurate descriptions of the atomic environments (determined by \verb|nmax| and \verb|lmax| in \verb|gap_config.cfg|) can lead to overfitting.
+
+\subsubsection*{Questions}
+
+\begin{enumerate}
+\item How could you identify when overfitting is taking place?
+\item Using 100 training snapshots, train models using different values of sigma and calculate the RMSE on the training and validation set each time. Do the results match your expectations? What is the optimal value of sigma, in your opinion?
+\item Using 100 training snapshots, train models using different values of nmax and calculate the RMSE on the training and validation set each time. Do the results match your expectations? What is the optimal value of sigma, in your opinion.
+
+\item (Optional) Once you have found the optimal value of some paramter(s), use these parameters to train a model using 200 snapshots. Does this lead to more or less overfitting than when you used 100 snapshots? Is the difference significant?
+\item What does this process teach you about how ML models are effectively trained?
+
 \subsection{Energy vs Forces}
 
+This section could be completed by just one member of your group.
+
 \subsection{Running Dynamics}
+
+This section could be completed by just one member of your group.
+
+Once we have trained a machine learning model which are happy is sufficiently accurate, we can use that model to run molecular dynamics simulations.
+
+\subsubsection*{Questions}
+
+\begin{enumerate}
+
+\item Read through through the python script \verb|molecular_dynamics.py| and make sure you understand what each command means.
+\item Run a molecular dynamics simulation for 200 timesteps at constant energy, and check the logfile \verb|nve.log| which is produced. What information in this log file could you use to establish if your ML potential is working properly or not?
+\item What is the microscopic reason that we see the temperature in the log file fluctuating over the course of this simulation?
+\item Run an NVT molecular dynamics simulation for 100 timesteps, and check the logfile \verb|nvt.log| which is produced. You will see that the total energy of the system is not conserved. What real-life experimental conditions are we reproducing which explains this variation in the total energy?
+\item 
+
+\end{enumerate}
 
 \section{Learning Polarizabilities}
 

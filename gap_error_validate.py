@@ -12,7 +12,7 @@ for atoms in pos:
     atoms.set_calculator(gap)
     gap_energy.append(atoms.get_potential_energy())
 
-np.savetxt('test_errors.out',np.vstack([energy,gap_energy]).T)
+np.savetxt('validation_errors.csv',np.vstack([energy,gap_energy]).T,delimiter=',')
 
-MSE = np.sum(np.square([energy[i]-gap_energy[i] for i in range(len(pos))]))
-print(MSE)
+RMSE = np.average(np.square([energy[i]-gap_energy[i] for i in range(len(pos))]))
+print('Root Mean Square Error in the energy =',RMSE, 'eV')
