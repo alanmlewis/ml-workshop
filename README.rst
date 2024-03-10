@@ -120,4 +120,6 @@ This should take a few seconds, and produce four files: ``PS0.npy``, ``PS0_Amat.
 Workshop Instructions
 =====================
 
-Detailed instructions for completing the full workshop will be provided soon.
+Detailed instructions for completing the full workshop are given in `this pdf`_.
+
+.. _this pdf: https://github.com/alanmlewis/ml-workshop/blob/main/instructions/workshop.pdf
