@@ -12,12 +12,12 @@ init_snapshot.set_calculator(gap)
 
 MaxwellBoltzmannDistribution(init_snapshot,temperature_K=300.,force_temp=True)
 
-#dyn = VelocityVerlet(init_snapshot,timestep=0.5*fs,logfile='nve.log',trajectory='nve.traj'))
+#dyn = VelocityVerlet(init_snapshot,timestep=0.5*fs,logfile='nve.log',trajectory='trajectory.traj'))
 
-dyn = Langevin(init_snapshot,temperature_K=300,timestep=0.5*fs,logfile='nvt.log',friction=0.1/fs,trajectory='nvt.traj')
+dyn = Langevin(init_snapshot,temperature_K=300,timestep=0.5*fs,logfile='nvt.log',friction=0.1/fs,trajectory='trajectory.traj')
 
 n_steps = 100
 dyn.run(n_steps)
 
-traj = ase.io.trajectory.Trajectory('nvt.traj')
+traj = ase.io.trajectory.Trajectory('trajectory.traj')
 ase.io.write('trajectory.xyz',traj,write_info=False)
