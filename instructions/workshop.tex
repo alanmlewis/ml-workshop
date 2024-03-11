@@ -10,7 +10,7 @@
 \usepackage[tagged, highstructure]{accessibility}
 
 
-\title{\vspace{-5ex} Accelerating Molecular Dynamics with Machine Learning \\ Workshop 4, SFB 986 Spring School 2024}
+\title{Accelerating Molecular Dynamics with Machine Learning \\ Workshop 4, SFB 986 Spring School 2024}
 \author{Alan M. Lewis}
 
 \date{}
@@ -21,12 +21,13 @@
 
 \section{Getting Started}
 
-This workshop is designed to be completed in groups of 2-4. Try to ensure your group has a mix of people with and without experience in coding, so you can help each other. If someone in the group is unable to run one or both machine learning packages, they are responsible for plotting graphs of the data produced by the other team members. Each section has subsections which should be completed by everybody, and subsections which can be divided amongst the group. These should be clearly indicated.
+%This workshop is designed to be completed in groups of 2-4. Try to ensure your group has a mix of people with and without experience in coding, so you can help each other. If someone in the group is unable to run one or both machine learning packages, they are responsible for plotting graphs of the data produced by the other team members. Each section has subsections which should be completed by everybody, and subsections which can be divided amongst the group. These should be clearly indicated.
+
+These sections provide very brief introductions to the command line language bash, and the command line text editor vi. If you are already familiar with these, or are able to modify text files using a different text editor, you can skip this section.
 
 \subsection{Bash}
-Note: If you have used the bash command line interface before, you can probably skip this section.
 
-We will run the machine learning codes from the command line. If you've not used the command line before, it is simply an alternative way to navigate your computer and run commands. You shouldn't need many commands for the workshop, and all of the commands related to the machine learning programs are explained at the relevant point of this Workshop Guide. Additional commands you might find useful are:
+We will run the machine learning codes from the command line. If you've not used the command line before, it is simply an alternative way to navigate your computer and run commands. You shouldn't need many commands for the workshop, and all of the commands related to the machine learning programs are explained at the relevant point of these instructions. Additional commands you might find useful are:
 
 \begin{itemize}
 
@@ -40,7 +41,7 @@ We will run the machine learning codes from the command line. If you've not used
 
 \subsection{vi}
 
-If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubuntu), you will be able to use those tools to view and modify text files. If you are restricted to just using the command line, you will need to use a command line text editor called vi to view and modify text files. A cheat sheet covering simple commands is provided here to help you with this if you need it.
+If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubuntu), you will be able to use those tools to view and modify text files. If you are restricted to just using the command line to modify the files , you will need to use a command line text editor called vi to view and modify text files. A cheat sheet covering simple commands is provided here to help you with this if you need it.
 
 \begin{itemize}
     \item \texttt{:w} Save
@@ -61,7 +62,13 @@ If you have access to a plain text editor (e.g. Notepad on Windows, gedit on Ubu
 
 The program \verb|gap_fit| takes some input data stored in an xyz file, and trains a potential which can be used to calculate the energy and forces of a similar target system, given only the atomic positions of that target system. That potential is stored in a single file, called \verb|gap.xml|. It is very straightforward to run from the command line: \verb|gap_fit config_file=gap_config.cfg|.
 
-This reads a configuration file, here called \verb|gap_config.cfg| but which could in principle be called anything, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. We have covered most of these parameters in principle in the lecture part of this workshop, and will now look at the effect of how varying some of these parameters affects our ML performance.
+This reads a configuration file, here called \verb|gap_config.cfg|, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. These parameters are:
+\begin{itemize}
+
+\item 
+
+\end{itemize}
+We have covered most of these parameters in principle in the lecture part of this workshop, and will now look at the effect of how varying some of these parameters affects our ML performance.
 
 \subsection{How accurate is my model?}
 
@@ -177,7 +184,9 @@ Note that this separation of commands means that you don't need to necessarily r
 
 \subsection*{Predicting Polarizabilities of new structures}
 
-In Section \ref{sec:md} we calculated a short molecular dynamics trajectory using a ML potential we had trained. If we were using traditional quantum chemistry methods, we could have calculated the polarizabilities at the same time. When using ML, we need to use a separate ML model to predict the polarizabilities.
+In Section \ref{sec:md} we calculated a short molecular dynamics trajectory using a ML potential we had trained. If we were using traditional quantum chemistry methods, we could have calculated the polarizabilities at the same time. When using ML, we need to use a separate ML model to predict the polarizabilities of each snapshot which we have generated, such as the one we have just trained. Therefore, we can now put everything together, and obtain a molecular dynamics trajectory with the associated polarizabilities using purely ML models.
+
+The commands needed to do this are collected in the script \verb|prediction.sh| in the \verb|polarizability| folder.
 
 
 \end{document}
