@@ -65,9 +65,26 @@ The program \verb|gap_fit| takes some input data stored in an xyz file, and trai
 This reads a configuration file, here called \verb|gap_config.cfg|, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. These parameters are:
 \begin{itemize}
 
-\item 
+\item \verb|atoms_filename|, which specifies the file which contains the training data.
+\item \verb|cutoff| and \verb|atom_sigma|, which determine the radius of the atomic environment and the width of the Gaussian used to represent the atoms in that environment, respectively.
+\item \verb|l_max| and \verb|n_max|, which govern the precision with which the atomic environments are quantified (larger integers = more accurate).
+\item \verb|default_sigma| specifies how precisely we should fit to the training energies and forces.
+\item \verb|e0| contains the energies of isolated H and O atoms.
+\item \verb|gp_file| gives the filename where the trained potential will be stored.
 
 \end{itemize}
+
+The following keywords must also be present in the config file, but refer to more technical details which we will not cover today and do not need to be changed.
+
+\begin{itemize}
+\item \verb|n_sparse|, the number of atomic environments to use in the training. We will always use fewer than 8000.
+\item \verb|delta|
+\item \verb|covariance_type|
+\item \verb|zeta| determines the degree of non-linearity in the kernels.
+\item \verb|sparse_jitter| controls the numerical convergence of the training.
+\item \verb|sparse_separate_file=F| prevents unnecessary extra files being written. 
+\end{itemize}
+
 We have covered most of these parameters in principle in the lecture part of this workshop, and will now look at the effect of how varying some of these parameters affects our ML performance.
 
 \subsection{How accurate is my model?}
@@ -76,29 +93,30 @@ In order to see if our machine learning model is accurate, we need some way to t
 
 In the \verb|ml-workshop| folder, you will see two python scripts, called \verb|gap_error_validate.py| and \verb|gap_error_train.py|. These perform this validation process on two different sets of snapshots - a validation set contained in \verb|gap_validate.xyz|, which we will never use to train an ML model, and the set of snapshots we used to train the model, which is given in the config file, respectively. These will return as the last line of the output the root mean square error in the energy across the set of the snapshots. They also produce two files called \verb|validation_errors.csv| and \verb|train_errors.csv|, which contain the true values of the energy for each snapshot in the first column and the corresponding predicted energy in the second column.
 
-\subsubsection*{Questions}
+\subsubsection*{Exercises}
 
 \begin{enumerate}
  
-\item What is the RMSE in the energy when you use a ML model trained using the default parameters to predict the energies of the validation set?
-\item What is the RMSE in the energy when you use a ML model trained using the default parameters to predict the energies of the training set?
+\item Train a GAP model using the default parameters in the \verb|gap_config.cfg| file.
+\item What is the RMSE in the predicted energies of the validation set?
+\item What is the RMSE in the predicted energies of the training set?
 \item Why are these values different?
 \item What do you think will happen to each error when we train the model using more snapshots?
-\item (Optional) Plot \verb|validation_errors.csv| and \verb|train_errors.csv| as a scatter plot. What would these plots look like if the prediction was perfect? Can you tell by eye for which set of snapshots the error is more accurately predicted.
+\item (Optional) Plot \verb|validation_errors.csv| and \verb|train_errors.csv| as a scatter plot. What would these plots look like if the prediction was perfect? Can you tell by eye for which set of snapshots the error is more accurately predicted?
 
 \end{enumerate}
 
 \subsection{Creating a Learning Curve}
 
-The most important way to test whether our machine learning method is working as we expect is to plot a learning curve - that is, a plot of the RMSE in the predictions of the model against the number of snapshots used to train the model. We expect to see the error decrease as the number of training snapshots is increased, up to some limit, when the error stops improving.
+The most important way to test whether our machine learning method is working as we expect is to plot a learning curve - that is, a plot of the RMSE in the predictions of the model against the number of snapshots used to train the model. We expect to see the error decrease as the number of training snapshots is increased, up to some limit when the error stops reducing.
 
-To help you plot a learning curve using \verb|gap_fit|, I have provided a number of input files labelled \verb|gap_input_N.xyz|, where \verb|N| is the number of snapshots in the training set. Each set includes all of the snapshots in the previous set, plus some new snapshots. You can select your trainig set by modifying \verb|gap_config.cfg|.
+To help you plot a learning curve using \verb|gap_fit|, I have provided a number of input files labelled \verb|gap_input_N.xyz|, where \verb|N| is the number of snapshots in the training set. Each set includes all of the snapshots in the previous set, plus some new snapshots. You can select your training set by modifying \verb|gap_config.cfg|.
 
-\subsubsection*{Questions}
+\subsubsection*{Exercises}
 
 \begin{enumerate}
 
-\item Train a model using 50, 100, 200 and 400 snapshots. Calculate the accuracy of each model on both the validation set and the corresponding training set, making a note of each error as you go.
+\item Train a model using 50, 100, 200 and 400 snapshots. After training each one, calculate the accuracy of each model on both the validation set and the corresponding training set, making a note of each error as you go.
 \item Plot the learning curves for both the RMSE over the training set and validation set on a single graph. Does what you see match your prediction from the previous section?
 \item Based on this plot, do you think training the model again using more training structures would further reduce the error?
 \item (Optional) Train a model using 800 snapshots. This will take a significant amount of time, so it is probably best to set this calculation up to run during the break! Only attempt this if your computer has at least 8 GB RAM.
@@ -107,7 +125,7 @@ To help you plot a learning curve using \verb|gap_fit|, I have provided a number
 
 \subsection{Overfitting}
 
-This section could be completed by just one or two members of your group.
+%This section could be completed by just one or two members of your group.
 
 Overfitting is a common problem when performing machine learning. It describes a situation where your model can extremely accurately reproduce the data in your training set, but in doing so is extremely unpredictable and inaccurate "between" the training points. This is illustrated for a simple example in Figure 1.
 
@@ -120,16 +138,19 @@ Overfitting is a common problem when performing machine learning. It describes a
 
 \end{figure}
 
-Overfitting can be caused by a poor choice of a number of parameters. Some of these are directly connected to the idea of overfitting. For example, in \verb|gap_config.cfg|, the first value in the variable \verb|default_sigma| is an estimate of the standard deviation in the energy calculations. This effectively tells the model how closely it should try to fit to the training data. A small value here will almost always lead to overfitting. However, sometimes other parameters can lead to fitting in less obvious ways. For example, having extremely accurate descriptions of the atomic environments (determined by \verb|nmax| and \verb|lmax| in \verb|gap_config.cfg|) can lead to overfitting.
+Overfitting can be caused by a poor choice of a number of parameters. Some of these are directly connected to the idea of overfitting. For example, in \verb|gap_config.cfg|, the first value in the variable \verb|default_sigma| is an estimate of the standard deviation in the energy calculations. This effectively tells the model how closely it should try to fit to the training data. A small value here will almost always lead to overfitting. However, sometimes other parameters can lead to overfitting in less obvious ways. For example, having extremely accurate descriptions of the atomic environments (determined by \verb|nmax| and \verb|lmax| in \verb|gap_config.cfg|) can lead to overfitting.
 
-\subsubsection*{Questions}
+Note that if you want to save the GAP models you train with certain parameters, you will need to change the \verb|gp_file| keyword before you run \verb|gap_fit|, otherwise the model will be saved to \verb|gap.xml| every time, overwriting the previous model. However, if you do this you will also need to modify the python files you run to ensure that you load the correct model (all python files will load \verb|gap.xml| by default).
+
+\subsubsection*{Exercises}
 
 \begin{enumerate}
 \item How could you identify when overfitting is taking place?
-\item Using 100 training snapshots, train models using different values of sigma and calculate the RMSE on the training and validation set each time. Do the results match your expectations? What is the optimal value of sigma, in your opinion?
-\item Using 100 training snapshots, train models using different values of nmax and calculate the RMSE on the training and validation set each time. Do the results match your expectations? What is the optimal value of sigma, in your opinion.
+\item Using 100 training snapshots, train models using different values of \verb|default_sigma| for the energy and calculate the RMSE on the training and validation set each time. Do the results match your expectations? What is the optimal value, in your opinion?
+\item Using 100 training snapshots, train models using different values of \verb|nmax| and calculate the RMSE on the training and validation set each time. How large is the effect of varying this parameter? What is the optimal value, in your opinion?
+\item (Optional) Repeat this exercise varying some of the other fitting parameters, \verb|cutoff|, \verb|atom_sigma| and \verb|l_max|. Do these affect the accuracy of the model? Can they increase or decrease overfitting?
 \item (Optional) Once you have found the optimal value of some paramter(s), use these parameters to train a model using 200 snapshots. Does this lead to more or less overfitting than when you used 100 snapshots? Is the difference significant?
-\item What does this process teach you about how ML models are effectively trained?
+\item What does this process teach you about the steps involved in efficiently training an ML model?
 
 \end{enumerate}
 
@@ -140,17 +161,17 @@ Overfitting can be caused by a poor choice of a number of parameters. Some of th
 \subsection{Running Molecular Dynamics with an ML Potential}
 \label{sec:md}
 
-This section could be completed by just one member of your group.
+%This section could be completed by just one member of your group.
 
-So far we have only considered the energy predicted by the ML model, but the ML model also predicts the forces exerted on each atom by the electrons in the molecule. This means that once we have trained a machine learning model which are happy is sufficiently accurate, we can use the ML model to run molecular dynamics simulations. The simple script \verb|molecular_dynamics.py| does exactly that: it takes a snapshot from the validation set as a starting point, randomly assigns velocities to each atom, and uses the machine learned potential to calculate the forces acting on each atom. That is all of the information required to perform a dynamics simulation, as we use these velocities and forces to calculate the atomic positions and velocities a short time later, and then recalculate the forces on the atoms in their new positions using the ML potential. Doing this repeatedly results in a molecular dynamics trajectory.
+So far we have only considered the energy predicted by the ML model, but the model also predicts the forces exerted on each atom by the electrons in the molecule. This means that once we have trained a machine learning model which are happy is sufficiently accurate, we can use it to run molecular dynamics simulations. The simple script \verb|molecular_dynamics.py| does exactly that: it takes a snapshot from the validation set as a starting point, randomly assigns velocities to each atom, and uses the machine learned potential to calculate the forces acting on each atom. That is all of the information required to perform a dynamics simulation, as we use these velocities and forces to calculate the atomic positions and velocities a short time later, and then recalculate the forces on the atoms in their new positions using the ML potential. Doing this repeatedly results in a molecular dynamics trajectory.
 
-\subsubsection*{Questions}
+\subsubsection*{Exercises}
 
 \begin{enumerate}
 
 \item Read through through the python script \verb|molecular_dynamics.py| and make sure you understand what each command means.
 \item Run a molecular dynamics simulation for 200 timesteps at constant energy, and check the logfile \verb|nve.log| which is produced. What information in this log file could you use to establish if your ML potential is working as expected or not?
-\item What is the microscopic reason that we see the temperature in the log file fluctuating over the course of this simulation?
+\item What is the microscopic reason that we see the temperature in the log file fluctuating over the course of the simulation?
 \item Run an NVT molecular dynamics simulation for 100 timesteps, and check the logfile \verb|nvt.log| which is produced. You will see that the total energy of the system is not conserved. What real-life experimental conditions are we reproducing which explains this variation in the total energy?
 %\item Something with trajectory.xyz? Something with timings?
 
@@ -158,27 +179,28 @@ So far we have only considered the energy predicted by the ML model, but the ML 
 
 \section{Learning Polarizabilities}
 
-We can also use the data in the \verb|gap_input_N.xyz| files to train a ML model which can predict the polarizabilities of water snapshots. In these data files, the polarazability associated with each snapshot is listed along with the energies and forces; as with ML potential, the atomic positions and their associated polarizabilities are all we need to train a suitable model.
+We can also use the data in the \verb|gap_input_N.xyz| files to train a ML model which can predict the polarizabilities of water snapshots. In these data files, the polarazability associated with each snapshot is listed along with the energies and forces; as with the ML potential, the atomic positions and their associated polarizabilities are all we need to train a suitable model.
 
 Unlike the single command for training the ML model for the potential energy, the software to train the model which predicts polarizabilities needs to be run in stages. To make this process simpler, all the necessary commands have collected in a single file, \verb|polarizability.sh|, which is in the \verb|polarizability| folder. You can open this file using a text editor to modify the commands, and then run them all by typing \verb|./polarizability.sh| on the command line while in that folder.
 
 %\subsection{Training a Model}
 
-The first two commands in \verb|./polarizability.sh| calculate the descriptors describing each atomic environment present in the input file (\verb|-f $training_data|). It appears twice because we need the descriptors which transform as $L=0$ (\verb|-lm 0|) and those which transform as $L=0$ (\verb|-lm 2|). The systems are periodic (\verb|-p|), and we choose to keep the 200 most relevent features of each atomic environment (\verb|-nc 200|). The atomic environments are defined by the cutoff radius (\verb|-rc 4.0|) and the width of the Gaussian centered on each atom (\verb|-sg 0.3|).
+The first two commands in \verb|./polarizability.sh| calculate the descriptors describing each atomic environment present in the input file (\verb|-f $training_data|). It appears twice because we need the descriptors which transform as $L=0$ (\verb|-lm 0|) and those which transform as $L=0$ (\verb|-lm 2|). The systems are periodic (\verb|-p|), and we choose to keep the 200 most relevent features of each atomic environment (\verb|-nc 200|). The atomic environments are again defined by the cutoff radius (\verb|-rc 4.0|) and the width of the Gaussian centered on each atom (\verb|-sg 0.3|).
 
 The next two commands simply take these descriptors and calculate the kernels which describe the similarity between each pair of atomic environments in the dataset, for both $L=0$ and $L=2$. There is no need to modify any of the parameters for these commands.
 
-The final command both trains a ML models based on these descriptors and the polarizability data in the input file, and performs a validation calculation and outputs the results of this validation. In this case, no calculation of the error of the predicted polarazibilities of the training set is performed. The first three options indicate that the property to be learned is the Polarizability (\verb|-p Polarizabilility|), which is a rank 2 tensor (\verb|-r 2|) and symmetric (\verb|-t 1.0|). The next two options indicate the training data for the model, namely the atomic snapshots and their associated polarizabilities (\verb|-f $training_data|) and the kernels which relate the environments in these snapshots to one another (\verb|-k kernel0.npy kernel2.npy|). Then come the regularisation constants, which are designed to prevent overfitting (\verb|-reg 1e-8 1e-5|, one for each kernel). Finally, the input file is split into a set of training and validation snaphots (\verb|-rdm 150|), and the number of training snapshots to use is selected (\verb|-ftr 0.1|; this means that 10\% of of selected 150 training snapshots will be used), and the polarizabilities of the validation set are predicted and compared to the true values (\verb|-pr|).
+The final command both trains an ML model based on these descriptors and the polarizability data in the input file, and validates the model and outputs the results. In this case, no calculation of the error in the predicted polarazibilities of the training set is performed. The first three options indicate that the property to be learned is the Polarizability (\verb|-p Polarizabilility|), which is a rank 2 tensor (\verb|-r 2|) and symmetric (\verb|-t 1.0|). The next two options indicate the training data for the model, namely the atomic snapshots and their associated polarizabilities (\verb|-f $training_data|) and the kernels which relate the environments in these snapshots to one another (\verb|-k kernel0.npy kernel2.npy|). Then come the regularisation constants, which are introduced to prevent overfitting (\verb|-reg 1e-8 1e-5|, one for each kernel). Finally, the input file is split into a set of training and validation snaphots (\verb|-rdm 150|; 150 snapshots will be randomly selected to form the full training set, and the other 50 will be used for validation), and the number of training snapshots to use is selected (\verb|-ftr 0.1|; this means that 10\% of of selected 150 training snapshots will be used), and the polarizabilities of the validation set are predicted and compared to the true values (\verb|-pr|).
 
 Note that this separation of commands means that you don't need to necessarily rerun every command for every new calculations. For example, if you wanted to test the perfomance of models trained with different numbers of training structures, then after you have calculated the descriptors and kernels for the first time, you will only need to rerun the command \verb|sagpr_train| with different parameters to achieve this. If you want to skip a command, simply place a \# at the start of its line in \verb|polarizability.sh| and it will not be executed.
 
-\subsection*{Questions}
+\subsection*{Exercises}
 
 \begin{enumerate}
 
-\item Calculate a learning curve for three components of the polarizability ($xx$, $xy$, and $xx$). Which components have similar learning curves? Can you think of a reason why this might be the case?
-\item We have kept only 200 features of each atomic environment in order to save space on our hard disk. Make a note of the size of the \verb|PS0.npy| and \verb|PS2.npy| files. Then recalculate the learning curves from part 1 keeping 500 features of each atomic environment instead. Does this improve the accuracy of the ML models? How much bigger are the descriptor files in this case?
-\item
+\item Calculate a learning curve for three components of the polarizability ($xx$, $xy$, and $xx$). Would the model be further improved by adding more training structures?
+\item Which components of the polarizability have similar learning curves? Why might this be the case?
+\item We have kept only 200 features of each atomic environment in order to save space on our hard disk. Make a note of the size of the \verb|PS0.npy| and \verb|PS2.npy| files, then recalculate the learning curves from part 1 keeping 500 features of each atomic environment instead. Does this improve the accuracy of the ML models? How much bigger are the descriptor files in this case?
+\item Try to optimise the ML model, varying the regularisation parameters and the definition of the atomic environments. What is the best strategy to perform this optimisation? How accurate can you make your model?
 
 \end{enumerate}
 
