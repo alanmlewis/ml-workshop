@@ -5,6 +5,7 @@ from ase.units import fs
 import numpy as np
 import ase.io
 from quippy.potential import Potential
+import time
 
 # Load the GAP model
 gap = Potential(param_filename='gap.xml')
@@ -21,10 +22,14 @@ MaxwellBoltzmannDistribution(init_snapshot,temperature_K=300.,force_temp=True)
 # Uncomment the command below to run dynamics at a constant temperature
 dyn = Langevin(init_snapshot,temperature_K=300,timestep=0.5*fs,logfile='nvt.log',friction=0.1/fs,trajectory='trajectory.traj')
 
+
 # Set the number of steps for the MD simulation
 n_steps = 100
 # Run the MD simulation
+start = time.time()
 dyn.run(n_steps)
+end = time.time()
+print('Dynamics completed in',str(round(end-start,1)),'seconds')
 
 # Load the resulting trajectory file
 traj = ase.io.trajectory.Trajectory('trajectory.traj')

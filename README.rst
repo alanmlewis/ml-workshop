@@ -68,7 +68,7 @@ This section is optional, and should definitely be skipped if you are using Wind
 You may want to create a python environment specifically for this workshop. To do this, run
 
  ``python3 -m pip install virtualenv
- ``python3 -m virtualenv ./venv``
+ python3 -m virtualenv ./venv``
 
 This will create a folder called venv where we will install all of the python packages needed to run the workshop. You should activate this environment by running:
 
