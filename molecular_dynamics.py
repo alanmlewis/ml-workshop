@@ -17,10 +17,10 @@ init_snapshot.set_calculator(gap)
 MaxwellBoltzmannDistribution(init_snapshot,temperature_K=300.,force_temp=True)
 
 # Uncomment the command below to run dynamics at a constant energy
-#dyn = VelocityVerlet(init_snapshot,timestep=0.5*fs,logfile='nve.log',trajectory='trajectory.traj'))
+dyn = VelocityVerlet(init_snapshot,timestep=0.5*fs,logfile='nve.log',trajectory='trajectory.traj')
 
 # Uncomment the command below to run dynamics at a constant temperature
-dyn = Langevin(init_snapshot,temperature_K=300,timestep=0.5*fs,logfile='nvt.log',friction=0.1/fs,trajectory='trajectory.traj')
+#dyn = Langevin(init_snapshot,temperature_K=300,timestep=0.5*fs,logfile='nvt.log',friction=0.1/fs,trajectory='trajectory.traj')
 
 
 # Set the number of steps for the MD simulation
