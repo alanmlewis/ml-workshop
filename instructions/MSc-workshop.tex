@@ -26,9 +26,10 @@ To get started, you should log into \verb|your-username@teaching0.york.ac.uk|, u
 \begin{Verbatim}
     git clone https://github.com/alanmlewis/ml-workshop
 \end{Verbatim}
-This will create a new folder called ml-workshop; change directory into that folder. Everything else we do in the workshop will take place in this folder or a subfolder. Before you go any further, you should run the command
+This will create a new folder called ml-workshop; change directory into that folder. Everything else we do in the workshop will take place in this folder or a subfolder. Before you go any further, you should run the commands
 \begin{Verbatim}
     export OMP_NUM_THREADS=4
+    export OPENBLAS_NUM_THREADS=64
 \end{Verbatim}
 to ensure you only use 4 CPUs for each calculation. You will then need to install \verb|gap_fit|, the software which we will use to predict energies and forces, by running
 \begin{Verbatim}
