@@ -22,7 +22,7 @@
 
 \section{Getting Started}
 
-To get started, you should log into \verb|your-username@teaching0.york.ac.uk|, using your usual University username and password. You should then clone the repository contianing the data for this workshop by running
+To get started, you should log into teaching0 using \verb|ssh -X your-username@teaching0.york.ac.uk|, using your usual University username and password. You should then clone the repository containing the data for this workshop by running
 \begin{Verbatim}
     git clone https://github.com/alanmlewis/ml-workshop
 \end{Verbatim}
@@ -50,6 +50,7 @@ The program \verb|gap_fit| takes some input data stored in an xyz file, and trai
 \item \verb|cutoff| and \verb|atom_sigma|, which determine the radius of the atomic environment and the width of the Gaussian used to represent the atoms in that environment, respectively.
 \item \verb|l_max| and \verb|n_max|, which govern the precision with which the atomic environments are quantified (larger integers = more precise).
 \item \verb|covariance_type|, how the kernels are calculated. Options are \verb|DOT_PRODUCT| (linear kernel), \verb|ARD_SE| (Gaussian kernel), \verb|PP| (piecewise polynomial kernel).
+\item EITHER \verb|zeta|, which determines the power to which a non-linear in the kernel is raised (if \verb|covariance_type| is \verb|DOT_PRODUCT|, default = 2), OR \verb|theta_uniform|, the width of Gaussian function used in exponential kernels (if \verb|covariance_type| is \verb|ARD_SE| or \verb|PP|, default = 1.0).
 \item \verb|default_sigma| specifies how precisely we should fit to the training energies and forces (smaller values = more precise).
 \item \verb|gp_file| gives the filename where the trained potential will be stored.
 
@@ -60,7 +61,6 @@ The following keywords must also be present in the config file, but refer to mor
 \begin{itemize}
 \item \verb|n_sparse|, the number of atomic environments to use in the training. We will always use fewer than 8000.
 \item \verb|delta|, scaling parameter of the kernel per descriptor.
-\item \verb|zeta| determines the degree of non-linearity in the kernels.
 \item \verb|e0| contains the energies of isolated H and O atoms.
 \item \verb|sparse_jitter| controls the numerical convergence of the training.
 \item \verb|sparse_separate_file=F| prevents unnecessary extra files being written. 
@@ -139,5 +139,10 @@ So far we have only considered the energy predicted by the ML model, but the mod
 \item The dynamics calculated using the ML potential are approximately 1400 times faster than the traditional MD simulation I performed to obtain the training data. However, that doesn't account for the time it takes to create the model in the first place. What additional timings do we need to know to make a truly fair comparison of the computation costs of the two approaches? When will it be worth training an ML model to perform dynamics?
 
 \end{enumerate}
+
+
+\subsubsection*{Visualising the Trajectory}
+
+The trajectory produced by running a MD simulation is saved in the file \verb|trajectory.xyz|. This can be visualised using software called VMD. Load this software by running \verb|module load phys/VMD|, then load the trajectory using the command \verb|vmd trajectory.xyz|. This will open two windows - a visualisation, and a control window. For the best visualisation, from the control window choose Graphics > Representations, which will open a new window. In this window find the dropdown menu for Drawing Method, and select VDW. Close this window, and use the play button in the bottom right of the control window to visualise the trajectory.
 
 \end{document}
