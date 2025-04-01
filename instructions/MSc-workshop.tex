@@ -11,7 +11,7 @@
 \usepackage[tagged, highstructure]{accessibility}
 
 
-\title{Machine-Learned Potentials \\ Workshop 10, Data Science in Chemistry}
+\title{Machine-Learned Potentials \\ Workshop 8, Data Science in Chemistry}
 \author{Alan M. Lewis}
 
 \date{}
@@ -22,28 +22,42 @@
 
 \section{Getting Started}
 
-To get started, you should log into teaching0 using \verb|ssh -X your-username@teaching0.york.ac.uk|, using your usual University username and password. You should then clone the repository containing the data for this workshop by running
+To get started, you should log into Viking using \verb|ssh -X your-username@viking.york.ac.uk|, using your usual University username and password. You should then clone the repository containing the data for this workshop by running
 \begin{Verbatim}
     git clone https://github.com/alanmlewis/ml-workshop
 \end{Verbatim}
 This will create a new folder called ml-workshop; change directory into that folder. Everything else we do in the workshop will take place in this folder or a subfolder. Before you go any further, you should run the commands
 \begin{Verbatim}
-    export OMP_NUM_THREADS=4
-    export OPENBLAS_NUM_THREADS=64
+    export OMP_NUM_THREADS=1
+    export OPENBLAS_NUM_THREADS=1
 \end{Verbatim}
-to ensure you only use 4 CPUs for each calculation. You will then need to install \verb|gap_fit|, the software which we will use to predict energies and forces, by running
+to ensure you only use 1 CPU for each calculation on the head node. You should then create a virtual environment to install all the software we will need into:
 \begin{Verbatim}
-    python3 -m pip install quippy-ase
+    module load Python/3.10.8-GCCcore-12.2.0
+    python3 -m venv ./venv
+    source venv/bin/activate
 \end{Verbatim}
-This should install \verb|gap_fit| and all of its dependencies. To test this has installed correctly, run
+You will then need to install \verb|gap_fit|, the software which we will use to predict energies and forces, by running
 \begin{Verbatim}
-    gap_fit config_file=gap_config.cfg
+    python3 -m pip install numpy==1.26.3 ase==3.22.1 quippy-ase
+\end{Verbatim}
+This should install \verb|gap_fit| and all of its dependencies. You may see a warning when you install, which says something to the effect that certain programs are not on PATH. In this case, please run:
+\begin{Verbatim}
+    export PATH=$PATH:~/.local/bin
+\end{Verbatim}
+To test this has installed correctly, run
+\begin{Verbatim}
+    gap_fit config_file=gap_config.cfg 2> /dev/null
 \end{Verbatim}
 This program should take a few seconds to complete, during which time you should see a lot of text produced, with the words 'Bye Bye' displayed near the end of this text.
 
 \section{Learning Energies and Forces}
 
-The program \verb|gap_fit| takes some input data stored in an xyz file, and trains a machine-learned potential which can be used to calculate the energy and forces of a similar target system given only the atomic positions of that target system. That input data consists of a series of snapshots of atomic positions, the associated energy of that snapshot, and the electronic forces which act on each atom. The potential produced is stored in a single file, called \verb|gap.xml|. It is very straightforward to run the program from the command line: \verb|gap_fit config_file=gap_config.cfg|. This reads a configuration file, here called \verb|gap_config.cfg|, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. These parameters include the SOAP parameters, kernel types, and an overfitting parameter:
+The program \verb|gap_fit| takes some input data stored in an xyz file, and trains a machine-learned potential which can be used to calculate the energy and forces of a similar target system given only the atomic positions of that target system. That input data consists of a series of snapshots of atomic positions, the associated energy of that snapshot, and the electronic forces which act on each atom. The potential produced is stored in a single file, called \verb|gap.xml|. It is very straightforward to run the program from the command line:
+\begin{Verbatim}
+    gap_fit config_file=gap_config.cfg 2> /dev/null
+\end{Verbatim}
+This reads a configuration file, here called \verb|gap_config.cfg|, which specifies where the program should look for its training data and several other parameters which govern the machine learning model. These parameters include the SOAP parameters, kernel types, and an overfitting parameter:
 \begin{itemize}
 
 \item \verb|atoms_filename|, which specifies the file which contains the training data.
@@ -87,6 +101,8 @@ In the \verb|ml-workshop| folder, you will see two python scripts, called \verb|
 The most important way to test whether our machine learning method is working as we expect is to plot a learning curve - that is, a plot of the RMSE in the predictions of the model against the number of snapshots used to train the model. We expect to see the error decrease as the number of training snapshots is increased, up to some limit when the error stops reducing.
 
 To help you plot a learning curve using \verb|gap_fit|, a number of input files are provided labeled \verb|gap_input_N.xyz|, where \verb|N| is the number of snapshots in the training set. Each set includes all of the snapshots in the previous set, plus some new snapshots. You can select your training set by modifying \verb|gap_config.cfg|.
+
+In general, \textbf{we shouldn't run calculations on the head node of Viking}. Included in the directory is a submission script called \verb|sub.sbatch|, which will run \verb|gap_fit|, followed by the two python scripts which calculate the error on the validation set and the training set. The output from \verb|gap_fit| is stored in a file called \verb|GAP.out|, while the errors on the validation set are stored in \verb|errors.out|.
 
 \subsubsection*{Exercises}
 
@@ -134,8 +150,8 @@ So far we have only considered the energy predicted by the ML model, but the mod
 \begin{enumerate}
 
 \item Read through through the python script \verb|molecular_dynamics.py| and make sure you understand what each command does.
-\item Run a molecular dynamics simulation for 200 timesteps at constant energy, and check the logfile \verb|nve.log| which is produced. What information in this log file could you use to establish if your ML potential is working as expected or not?
-\item Run a molecular dynamics simulation at with a thermostat for 100 timesteps, and check the logfile \verb|nvt.log| which is produced. You will see that the total energy of the system is not conserved. What real-life experimental conditions are we reproducing which explains this variation in the total energy?
+\item Using the submission script \verb|md_sub.sbatch|, run a molecular dynamics simulation for 200 timesteps at constant energy, and check the logfile \verb|nve.log| which is produced. What information in this log file could you use to establish if your ML potential is working as expected or not?
+\item Run a molecular dynamics simulation with a thermostat for 100 timesteps, and check the logfile \verb|nvt.log| which is produced. You will see that the total energy of the system is not conserved. What real-life experimental conditions are we reproducing which explains this variation in the total energy?
 \item The dynamics calculated using the ML potential are approximately 1400 times faster than the traditional MD simulation I performed to obtain the training data. However, that doesn't account for the time it takes to create the model in the first place. What additional timings do we need to know to make a truly fair comparison of the computation costs of the two approaches? When will it be worth training an ML model to perform dynamics?
 
 \end{enumerate}
@@ -143,6 +159,6 @@ So far we have only considered the energy predicted by the ML model, but the mod
 
 \subsubsection*{Visualising the Trajectory}
 
-The trajectory produced by running a MD simulation is saved in the file \verb|trajectory.xyz|. This can be visualised using software called VMD. Load this software by running \verb|module load phys/VMD|, then load the trajectory using the command \verb|vmd trajectory.xyz|. This will open two windows - a visualisation, and a control window. For the best visualisation, from the control window choose Graphics > Representations, which will open a new window. In this window find the dropdown menu for Drawing Method, and select VDW. Close this window, and use the play button in the bottom right of the control window to visualise the trajectory.
+The trajectory produced by running a MD simulation is saved in the file \verb|trajectory.xyz|. This can be visualised using software called VMD. Load this software by running \verb|module load VMD|, then load the trajectory using the command \verb|vmd trajectory.xyz|. This will open two windows - a visualisation, and a control window. For the best visualisation, from the control window choose Graphics > Representations, which will open a new window. In this window find the dropdown menu for Drawing Method, and select VDW. Close this window, and use the play button in the bottom right of the control window to visualise the trajectory.
 
 \end{document}
