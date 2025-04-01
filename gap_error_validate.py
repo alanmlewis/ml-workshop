@@ -5,6 +5,7 @@ from quippy.potential import Potential
 # Load the validation data
 pos = ase.io.read('gap_validate.xyz',':')
 
+print('gap_validate.xyz')
 # Load the GAP potential
 gap = Potential(param_filename='gap.xml')
 
@@ -14,7 +15,8 @@ energy = []
 #Loop over every snapshot in the validation data
 for atoms in pos:
     # Extract the true energy of the snaphot and save it
-    energy.append(atoms.info['energy'])
+#    energy.append(atoms.info['energy'])
+    energy.append(atoms.get_total_energy())
     # Associate the ML potential with the snapshot
     atoms.set_calculator(gap)
     # Predict the energy of the snapshot using the ML potential
